@@ -1,3 +1,7 @@
+import crypto from 'crypto';
+import { config } from "dotenv";
+config();
+
 export const getRandomUserAgent = () => {
 	const userAgents = [
 		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36",
@@ -12,4 +16,15 @@ export const getRandomUserAgent = () => {
 
 	const randomIndex = Math.floor(Math.random() * userAgents.length);
 	return userAgents[randomIndex];
+}
+
+export const decryptString = (encryptedStr) => {
+	const key = Buffer.from(process.env.ENCRIPTION_KEY, 'hex');
+	const iv = Buffer.from(process.env.ENCRIPTION_IV, 'hex');
+	const algorithm = 'aes-256-cbc';
+	const decipher = crypto.createDecipheriv(algorithm, key, iv);
+	let decryptedData = '';
+	decryptedData += decipher.update(encryptedStr, 'hex', 'utf8');
+	decryptedData += decipher.final('utf8');
+	return decryptedData;
 }
