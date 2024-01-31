@@ -13,6 +13,24 @@ const port = process.env.PORT || 5000;
 
 const max_chunk_size = 1024 * 1024 * 1.5;
 
+app.get('/',(req,res) => {
+	if(req.headers['awake-key'] === process.env.AWAKE_KEY){
+		setTimeout(() => {
+			nodeFetch(process.env.SELF_DOMAIN,{
+				method:'HEAD',
+				headers:{
+					'User-Agent':getRandomUserAgent(),
+					'awake-key': process.env.AWAKE_KEY
+				}
+			})
+
+		},120*1000)
+		res.send('Awaked')
+	} else {
+		res.send('Welcome MOVIES4U Streaming API')
+	}
+});
+
 app.get('/video/:url/:size', async (req, res) => {
     const range = req.headers.range;
 
