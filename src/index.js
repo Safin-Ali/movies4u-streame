@@ -3,7 +3,7 @@ import { config } from "dotenv";
 config();
 import cors from "cors";
 import nodeFetch from "node-fetch";
-import { decryptString, getRandomUserAgent } from "./utils.js";
+import { decryptString, getArrayBuff, getRandomUserAgent } from "./utils.js";
 
 const app = express();
 app.use(cors());
@@ -51,19 +51,29 @@ app.get('/video/:url/:size', async (req, res) => {
         'Content-Type': 'video/mp4'
     });
 
+	const bytes = `bytes=${start}-${end}`;
+
     try {
         const response = await nodeFetch(decryptString(req.params.url), {
             headers: {
                 'User-Agent': getRandomUserAgent(),
-                'Range': `bytes=${start}-${end}`
+                'Range': bytes
             }
         });
-        const stream = await response.arrayBuffer();
+        const stream = await getArrayBuff({
+			url:decryptString(req.params.url),
+			range:bytes,
+			response
+		});
         res.write(Buffer.from(stream));
         res.end();
     } catch (error) {
         console.error("Error fetching video:", error.message);
-        res.status(500).send("server side error");
+		if(error.message === 'link issue' || error.message === 'link expired') {
+			res.status(500).send(error.message);
+		} else {
+			res.status(500).send("server side error")
+		};
     }
 });
 
