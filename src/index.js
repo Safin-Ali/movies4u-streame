@@ -16,7 +16,7 @@ const max_chunk_size = 1024 * 1024 * 1.5;
 app.get('/',(req,res) => {
 
 	// awake app instance after 13 minutes later
-	
+
 	if(req.headers['awake-key'] === process.env.AWAKE_KEY){
 		setTimeout(() => {
 			nodeFetch(process.env.SELF_DOMAIN,{
@@ -35,9 +35,6 @@ app.get('/',(req,res) => {
 
 app.get('/video/:url/:size', async (req, res) => {
     const range = req.headers.range;
-
-	console.log(req.params.url);
-
     if (!range) {
         return res.status(400).send('Range header is required');
     }
