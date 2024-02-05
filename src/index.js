@@ -4,6 +4,7 @@ config();
 import cors from "cors";
 import nodeFetch from "node-fetch";
 import { decryptString, getArrayBuff, getRandomUserAgent } from "./utils.js";
+import player_page from './video_player.js';
 
 const app = express();
 app.use(cors());
@@ -76,6 +77,14 @@ app.get('/video/:url/:size', async (req, res) => {
 		};
     }
 });
+
+app.get('/stream/:url',(req,res) => {
+	try {
+		res.send(player_page(decryptString(req.params.url)));
+	} catch (err) {
+		res.sendStatus(500).send('server side error')
+	}
+})
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
